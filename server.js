@@ -41,6 +41,37 @@ app.get('/signup', (req, res) => {
 app.get('/login',(req,res)=>{
     res.sendFile(path.join(__dirname, "/views/login.html")); 
 })
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const user = await User.findOne({ username: username, password: password });
+        if (!user) {
+            return res.status(401).send('Login failed. User not found or password does not match.');
+        }
+        switch(user.role) {
+            case 'admin':
+              return res.redirect('/admin');
+            case 'student':
+              return res.redirect('/student');
+            case 'staff':
+                return res.redirect('/staff');
+            case 'international-students':
+                return res.redirect('/international-students');
+            default:
+              // Handle unknown role or redirect to a default page
+              return res.redirect('/');
+        }
+    } catch (error) {
+        res.status(500).send('Internal server error');
+    }
+});
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'avootkuri@gmail.com', // your Gmail address
+      pass: 'vgpkuraaedmfrtxy' // your app password
+    }
+  });
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*'); // Update '*' to your domain in production
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
