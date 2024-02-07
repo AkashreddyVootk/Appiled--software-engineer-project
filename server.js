@@ -1,6 +1,21 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
+const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
+const User=require('./models/user');
+const http=require('http');
+const socketIo=require('socket.io');
+const server=http.createServer(app);
+const fetch =require('node-fetch');
+let io=socketIo(server);
+const Content = require('./models/Content');
+const NEWS_API_KEY = '6c3e7f3d41d846f4821ecd45a908be7e';
+const BASE_URL = 'https://newsapi.org/v2';
+const axios = require('axios');
+mongoose.connect('mongodb+srv://DeakinUniHelp:eT0KB6dk8jmv3l4k@cluster0.nwhttxz.mongodb.net/?retryWrites=true&w=majority',{useNewUrlParser:true,useUnifiedTopology:true});
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, '/views/home.html'));
@@ -20,8 +35,87 @@ app.get('/international-students', function(req, res) {
 app.get('/admin', function(req, res) {
     res.sendFile(path.join(__dirname, '/views/Admin.html'));
 });
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, function() {
-    console.log(`Server is running on port ${PORT}`);
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, '/views/signup.html'));
 });
+app.get('/login',(req,res)=>{
+    res.sendFile(path.join(__dirname, "/views/login.html")); 
+})
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // Update '*' to your domain in production
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    next();
+});
+app.use(express.json());
+// POST endpoint for updating content
+app.post('/api/content', async (req, res) => {
+    const pageType = req.body.pageType;
+    const title = req.body.title;
+    const content = req.body.content;
+
+    // Log the variables to debug
+    console.log({ pageType, title, content });
+
+    try {
+        const updatedContent = await Content.findOneAndUpdate(
+            { pageType: pageType },
+            { title: title, content: content },
+            { new: true, upsert: true }
+        );
+        res.json({ message: 'Content updated successfully', updatedContent });
+    } catch (error) {
+        console.error('Failed to update content', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+  
+const fetchNews = async () => {
+    const url = `https://newsapi.org/v2/everything?q=education&from=2024-01-07&sortBy=publishedAt&apiKey=6c3e7f3d41d846f4821ecd45a908be7e`;
+    try {
+        const response = await axios.get(url);
+        return response.data.articles;
+    } catch (error) {
+        console.error('Error fetching news from NewsAPI:', error);
+        return [];
+    }
+};
+
+io.on('connection', (socket) => {
+    console.log('New client connected');
+    fetchNews().then(articles => socket.emit('news', articles));
+    const intervalId = setInterval(() => {
+        fetchNews().then(articles => socket.emit('news', articles));
+    }, 30000); // 30000 milliseconds = 30 seconds
+
+    // Clear the interval when the client disconnects
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+        clearInterval(intervalId);
+    });
+});
+
+
+// Inside your server.js or wherever you've set up your routes
+
+app.get('/api/content/:pageType', async (req, res) => {
+    try {
+        const { pageType } = req.params;
+        const content = await Content.findOne({ pageType });
+        if (content) {
+            res.json(content);
+        } else {
+            res.status(404).send({ message: "Content not found" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Server error" });
+    }
+});
+
+  
+
+
+server.listen(3000, () => console.log('Server started on port 3000'));
+
