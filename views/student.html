@@ -4,7 +4,23 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Deakin University Help</title>
+  <script src="https://cdn.socket.io/4.2.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const socket = io('http://localhost:3000');
 
+            socket.on('news', (articles) => {
+                const newsContainer = document.getElementById('news');
+                newsContainer.innerHTML = ''; // Clear old news
+
+                articles.forEach(article => {
+                    const articleElement = document.createElement('div');
+                    articleElement.textContent = article.title;
+                    newsContainer.appendChild(articleElement);
+                });
+            });
+        });
+    </script>
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="../public/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
@@ -13,24 +29,51 @@
 <body>
     <nav class="white" role="navigation">
         <div class="nav-wrapper container">
-          <a id="logo-container" href="/" class="brand-logo">DUH</a>
+          <a id="logo-container" href="/" class="brand-logo">
+            <img src="../public/images/logo-transparent-png 2.png" alt="DUH Logo" width="32" height="32">
+        </a>
           <ul class="right hide-on-med-and-down">
-            <li><a href="/staff">staff</a></li>
-            <li><a href="/student">student</a></li>
-            <li><a href="/international-students">international-students</a></li>
-            <li><a href="/admin">Admin</a></li>
-          </ul>
-    
-          <ul id="nav-mobile" class="sidenav">
-            <li><a href="#">staff</a></li>
-            <li><a href="#">student</a></li>
-            <li><a href="#">international-students</a></li>
-          </ul>
-          <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+       
+           
+          </ul> 
         </div>
       </nav>
-    
-<p>Page is under construction</p>
+      <div id="content">
+      <!-- Content fetched from the server will be displayed here -->
+  </div>
+
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          fetch('/api/content/student')
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  const contentDiv = document.getElementById('content');
+                  const title = document.createElement('h1');
+                  const content = document.createElement('p');
+                  
+                  title.textContent = data.title;
+                  content.textContent = data.content;
+                  
+                  contentDiv.appendChild(title);
+                  contentDiv.appendChild(content);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+              });
+      });
+  </script>
+      <div id="StudentsContent">
+        <!-- Content fetched from the server will be displayed here -->
+      </div>
+<h1>News Feed</h1>
+    <div id="news"></div>
+<div class="news-feed">
+ 
   <footer class="page-footer teal">
     <div class="container">
       <div class="row">
@@ -46,12 +89,13 @@
     </div>
   </footer>
 
-
+  
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="../public/js/materialize.js"></script>
   <script src="../public/js/init.js"></script>
-<script id="cb1">
+  <script id="cb1" src="../public/js/cb.js"></script>
+  <script id="cb1">
     window.botpressWebChat.init({
       composerPlaceholder: "Chat with DUH Bot",
       botConversationDescription: "How can I help you today?",
@@ -63,7 +107,7 @@
       botName: "DUH Bot",
       frontendVersion: "v1",
       showPoweredBy: false,
-    });
-  </script>
+    });
+  </script>
   </body>
 </html>
