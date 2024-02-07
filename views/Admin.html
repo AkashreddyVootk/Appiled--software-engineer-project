@@ -1,55 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Deakin University Help</title>
-
-  <!-- CSS  -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="../public/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  <link href="../public/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Admin Dashboard - Manage Content</title>
+    
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../public/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="../public/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 </head>
 <body>
     <nav class="white" role="navigation">
         <div class="nav-wrapper container">
-          <a id="logo-container" href="/" class="brand-logo">DUH</a>
-          <ul class="right hide-on-med-and-down">
-            <li><a href="/staff">staff</a></li>
-            <li><a href="/student">student</a></li>
-            <li><a href="/international-students">international-students</a></li>
-            <li><a href="/admin">Admin</a></li>
-          </ul>
-    
-          <ul id="nav-mobile" class="sidenav">
-            <li><a href="#">staff</a></li>
-            <li><a href="#">student</a></li>
-            <li><a href="#">international-students</a></li>
-          </ul>
-          <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-        </div>
-      </nav>
-<p>Page is under construction</p>
-  <footer class="page-footer teal">
-    <div class="container">
-      <div class="row">
-        <div class="col l6 s12">
-          <h5 class="white-text">Bio</h5>
-          <p class="grey-text text-lighten-4">We are a team of college students working on this project for people to start their university Life</p>
-
-
-        </div>
+            <a id="logo-container" href="/" class="brand-logo">
+                <img src="../public/images/logo-transparent-png 2.png" alt="DUH Logo" width="32" height="32">
+            </a>
+            <ul class="right hide-on-med-and-down">
+                <li><a href="/staff">Staff</a></li>
+                <li><a href="/student">Student</a></li>
+                <li><a href="/international-students">International Students</a></li>
+                <li><a href="/admin">Admin</a></li>
+            </ul>
         
-      </div>
-    </div>
-    </div>
-  </footer>
+            <ul id="nav-mobile" class="sidenav">
+                <li><a href="/staff">Staff</a></li>
+                <li><a href="/student">Student</a></li>
+                <li><a href="/international-students">International Students</a></li>
+                <li><a href="/admin">Admin</a></li>
+            </ul>
+            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
 
+    <div class="container">
+        <h2>Content Management</h2>
+        <form id="contentForm">
+            <div class="input-field">
+                <select id="pageType" required>
+                    <option value="" disabled selected>Select Page</option>
+                    <option value="international_students">International Students</option>
+                    <option value="students">Students</option>
+                    <option value="staff">Staff</option>
+                </select>
+                <label>Page Type</label>
+            </div>
+            <div class="input-field">
+                <input id="title" type="text" required>
+                <label for="title">Title</label>
+            </div>
+            <div class="input-field">
+                <textarea id="content" class="materialize-textarea" required></textarea>
+                <label for="content">Content</label>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit">Update<i class="material-icons right">send</i></button>
+        </form>
+    </div>
 
-  <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="../public/js/materialize.js"></script>
-  <script src="../public/js/init.js"></script>
+    <footer class="page-footer teal">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">Bio</h5>
+                    <p class="grey-text text-lighten-4">We are a team of college students working on this project to help people start their university life.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--  Scripts-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="../public/js/materialize.js"></script>
+    <script src="../public/js/init.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('select');
+            M.FormSelect.init(elems);
+        });
+
+        document.getElementById('contentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const pageType = document.getElementById('pageType').value;
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+
+            fetch('/api/content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ pageType, title, content }),
+            })
+            .then(response => response.json())
+            .then(data => alert('Content updated successfully'))
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
 <script id="cb1">
     window.botpressWebChat.init({
       composerPlaceholder: "Chat with DUH Bot",
