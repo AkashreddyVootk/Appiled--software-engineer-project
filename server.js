@@ -72,6 +72,20 @@ let transporter = nodemailer.createTransport({
       pass: 'vgpkuraaedmfrtxy' // your app password
     }
   });
+app.post('/signup', async (req, res) => {
+    const { username, password ,role,email} = req.body;
+
+    const user = new User({ username, password,role,email});
+
+    try {
+        await user.save();
+        res.redirect('/login');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: 'Error creating user' });
+    }
+    
+});
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*'); // Update '*' to your domain in production
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
