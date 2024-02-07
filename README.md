@@ -1,22 +1,32 @@
 Deakin University Help Platform
+Description
+This project is a web-based platform designed to assist students, staff, and international students at Deakin University. It provides various sections including home, staff, student, international students, and admin views, along with signup and login functionalities.
 
-About
-
-This repository houses the Deakin University Help Platform, a comprehensive resource designed to assist international students, local students, and staff at Deakin University. Utilizing a modern MVC architecture, the platform offers a seamless experience across various functionalities, including informational resources, administrative content management, and a real-time chatbot for instant assistance.
-
+Installation
+Clone the repository to your local machine.
+Install Node.js and npm on your system.
+Navigate to the project directory and run npm install to install dependencies.
+Run node server.js to start the server on port 3000.
+Usage
+Access the application by navigating to http://localhost:3000 in your web browser.
+Choose the relevant section based on your role (Staff, Student, International Students, or Admin).
+Use the signup and login forms to register or log into the platform.
 Features
+Static file serving for CSS and JavaScript files.
+Dynamic routing for different user roles.
+User authentication and redirection based on roles.
+Real-time news updates using Socket.IO.
+Email notifications on signup.
+Dependencies
+Express
+Body-parser
+Mongoose
+Nodemailer
+Socket.IO
+Axios
+Node-fetch
+Contributing
+Contributions are welcome. Please fork the repository and submit a pull request with your changes or improvements.
 
-Informational Resources: Tailored guides and resources for international students and staff, covering academic, legal, and social aspects of university life.
-Admin Page: A secure interface for administrators to update and manage content across student and staff pages, ensuring the information remains accurate and timely.
-Chatbot Assistance: Integrating cutting-edge technology to provide real-time information from the internet, answering queries efficiently and accurately.
-Technologies
-
-Node.js: For server-side logic and handling backend functionalities.
-HTML & CSS: Crafting a user-friendly interface and ensuring a responsive design across devices.
-MongoDB: A NoSQL database to store and manage data dynamically.
-MVC Architecture: Ensuring a clear separation of concerns, enhancing maintainability and scalability of the application.
-Getting Started
-
-Prerequisites
-Node.js
-MongoDB
+License
+This project is licensed under the ISC License. See the LICENSE file for more details.
