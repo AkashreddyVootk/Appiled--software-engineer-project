@@ -84,7 +84,21 @@ app.post('/signup', async (req, res) => {
         console.error(error);
         res.status(500).send({ error: 'Error creating user' });
     }
-    
+
+let mailOptions = {
+        from: '"Deakin University Help" ', // sender address
+        to: req.body.email, // list of receivers
+        subject: 'Welcome to Our Deakin help Website!', // Subject line
+        text: 'Thank you for registering with us.', // plain text body
+        html: '<b>Thank you for registering with us.</b>' // html body
+      };
+  
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+      });    
 });
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*'); // Update '*' to your domain in production
